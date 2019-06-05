@@ -23,7 +23,7 @@
             },
             "defaultValue": "10.0.0.0/16"
         },
-        "subnet1Prefix": {
+        "subnetPrefix": {
             "type": "string",
             "metadata": {
                 "description": "ContainerTier Address Prefix CIDR"
@@ -75,18 +75,19 @@
         "registryName": "[concat('registry', parameters('random'))]",
         "VNetName": "[concat('vnet', parameters('random'))]",
         "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
-        "Subnet1Name": "edgeTier",
-        "SubNet1Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet1Name'))]",
-        "Nsg1Name": "[concat(variables('VNetName'), '-', variables('Subnet1Name'), '-nsg')]",
-        "Nsg1Id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Nsg1Name'))]",
+        "SubnetName": "edgeTier",
+        "SubNetId": "[concat(variables('VNetId'), '/subnets/', variables('SubnetName'))]",
+        "NsgName": "[concat(variables('VNetName'), '-', variables('SubnetName'), '-nsg')]",
+        "NsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NsgName'))]",
         "VmName": "[concat(parameters('vmName'), parameters('random'))]",
         "PublicIpName": "[concat(variables('VmName'), '-ip')]",
+        "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
         "NicName": "[concat(variables('vmName'),'-nic')]"
     },
     "resources": [
         {
             "comments": "## Network Security Group ##",
-            "name": "[variables('nsg1Name')]",
+            "name": "[variables('nsgName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
@@ -133,7 +134,7 @@
             "apiVersion": "2016-03-30",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
+                "[variables('nsgId')]"
             ],
             "tags": {
                 "contact": "[parameters('initials')]"
@@ -146,11 +147,11 @@
                 },
                 "subnets": [
                     {
-                        "name": "[variables('Subnet1Name')]",
+                        "name": "[variables('SubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('Subnet1Prefix')]",
+                            "addressPrefix": "[parameters('SubnetPrefix')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
+                                "id": "[variables('nsgId')]"
                             }
                         }
                     }
@@ -181,8 +182,8 @@
                 "contact": "[parameters('initials')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Nsg1Name'))]"
+                "[variables('PublicIpId')]",
+                "[variables('NsgId')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -191,16 +192,16 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPName'))]"
+                                "id": "[variables('PublicIpId')]"
                             },
                             "subnet": {
-                                "id": "[variables('Subnet1Id')]"
+                                "id": "[variables('SubnetId')]"
                             }
                         }
                     }
                 ],
                 "networkSecurityGroup": {
-                    "id": "[variables('Nsg1Id')]"
+                    "id": "[variables('NsgId')]"
                 }
             }
         },
@@ -214,7 +215,8 @@
                 "contact": "[parameters('initials')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
+                "[variables('PublicIpId'))]",
+                "[variables('NicId'))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -239,7 +241,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
+                            "id": "[variables('NicId')]"
                         }
                     ]
                 }
