@@ -16,6 +16,38 @@ describe('iac-tsi-quickstart', () => {
       it('should have property resources', () => should.exist(template.resources));
       it('should have property outputs', () => should.exist(template.outputs));
     });
+
+    context('defines the expected parameters', () => {
+      const actual = Object.keys(template.parameters);
+
+      it('should have 9 parameters', () => actual.length.should.be.exactly(9));
+      it('should have a initials', () => actual.should.containEql('initials'));
+      it('should have a random', () => actual.should.containEql('random'));
+      it('should have a vnetPrefix', () => actual.should.containEql('vnetPrefix'));
+      it('should have a subnetPrefix', () => actual.should.containEql('subnetPrefix'));
+      it('should have a vmName', () => actual.should.containEql('vmName'));
+      it('should have a vmSize', () => actual.should.containEql('vmSize'));
+      it('should have a osVersion', () => actual.should.containEql('osVersion'));
+      it('should have a adminUsername', () => actual.should.containEql('adminUsername'));
+      it('should have a adminPassword', () => actual.should.containEql('adminPassword'));
+    });
+
+    context('defines the expected variables', () => {
+      const actual = Object.keys(template.variables);
+
+      it('should have 12 variables', () => actual.length.should.be.exactly(12));
+      it('should have a NsgName', () => actual.should.containEql('NsgName'));
+      it('should have a NsgId', () => actual.should.containEql('NsgId'));
+      it('should have a VNetName', () => actual.should.containEql('VNetName'));
+      it('should have a VNetId', () => actual.should.containEql('VNetId'));
+      it('should have a SubnetName', () => actual.should.containEql('SubnetName'));
+      it('should have a SubNetId', () => actual.should.containEql('SubNetId'));
+      it('should have a PublicIpName', () => actual.should.containEql('PublicIpName'));
+      it('should have a PublicIpId', () => actual.should.containEql('PublicIpId'));
+      it('should have a NicName', () => actual.should.containEql('NicName'));
+      it('should have a NicId', () => actual.should.containEql('NicId'));
+      it('should have a registryName', () => actual.should.containEql('registryName'));
+    });
   });
 
   context('parameters file', (done) => {

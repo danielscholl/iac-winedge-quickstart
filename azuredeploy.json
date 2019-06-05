@@ -72,18 +72,18 @@
         }
     },
     "variables": {
-        "registryName": "[concat('registry', parameters('random'))]",
+        "NsgName": "[concat(variables('VNetName'), '-', variables('SubnetName'), '-nsg')]",
+        "NsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NsgName'))]",
         "VNetName": "[concat('vnet', parameters('random'))]",
         "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
         "SubnetName": "edgeTier",
-        "SubNetId": "[concat(variables('VNetId'), '/subnets/', variables('SubnetName'))]",
-        "NsgName": "[concat(variables('VNetName'), '-', variables('SubnetName'), '-nsg')]",
-        "NsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NsgName'))]",
+        "SubNetId": "[concat(variables('VNetId'), '/subnets/', variables('SubnetName'))]",  
         "VmName": "[concat(parameters('vmName'), parameters('random'))]",
         "PublicIpName": "[concat(variables('VmName'), '-ip')]",
         "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
         "NicName": "[concat(variables('vmName'),'-nic')]",
-        "NicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
+        "NicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
+        "registryName": "[concat('registry', parameters('random'))]"
     },
     "resources": [
         {
@@ -280,13 +280,13 @@
         "subnets": {
             "type": "object",
             "value": {
-                "subnet1Id": "[variables('subnet1Id')]"
+                "subnetId": "[variables('subnetId')]"
             }
         },
         "securityGroups": {
             "type": "object",
             "value": {
-                "nsg1Id": "[variables('nsg1Id')]"
+                "nsgId": "[variables('nsgId')]"
             }
         },
         "containerRegistry": {
