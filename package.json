@@ -1,0 +1,23 @@
+{
+  "name": "iac-winedge-quickstart",
+  "config": {
+    "initials": "npm"
+  },
+  "version": "1.0.0",
+  "description": "Test Cases for ARM Quickstart",
+  "scripts": {
+    "test": "tap tests/*.spec.js  --reporter spec",
+    "test-template": "tap tests/template.spec.js  --reporter spec",
+    "test-reporter": "tap tests/*.spec.js --reporter xunit --output-file .test-output/raw.txt > .test-output/results.xml",
+    "start": "watch 'clear && npm run -s test-template' .",
+    "provision": "./install.sh $npm_package_config_initials"
+  },
+  "author": "Daniel Scholl",
+  "license": "MIT",
+  "dependencies": {
+    "should": "^13.2.3",
+    "tap": "^14.2.0",
+    "tape": "^4.10.2",
+    "uuid": "^3.3.2"
+  }
+}

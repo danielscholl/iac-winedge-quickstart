@@ -82,7 +82,8 @@
         "VmName": "[concat(parameters('vmName'), parameters('random'))]",
         "PublicIpName": "[concat(variables('VmName'), '-ip')]",
         "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
-        "NicName": "[concat(variables('vmName'),'-nic')]"
+        "NicName": "[concat(variables('vmName'),'-nic')]",
+        "NicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
     },
     "resources": [
         {
@@ -183,7 +184,8 @@
             },
             "dependsOn": [
                 "[variables('PublicIpId')]",
-                "[variables('NsgId')]"
+                "[variables('NsgId')]",
+                "[variables('VnetId')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -215,8 +217,8 @@
                 "contact": "[parameters('initials')]"
             },
             "dependsOn": [
-                "[variables('PublicIpId'))]",
-                "[variables('NicId'))]"
+                "[variables('PublicIpId')]",
+                "[variables('NicId')]"
             ],
             "properties": {
                 "hardwareProfile": {
