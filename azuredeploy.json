@@ -1,0 +1,296 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "initials": {
+            "type": "string",
+            "metadata": {
+                "description": "Small unique string."
+            }
+        },
+        "random": {
+            "type": "int",
+            "metadata": {
+                "description": "3 Digit Random Integer"
+            },
+            "minValue": 100,
+            "maxValue": 999
+        },
+        "vnetPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network Address Prefix CIDR"
+            },
+            "defaultValue": "10.0.0.0/16"
+        },
+        "subnet1Prefix": {
+            "type": "string",
+            "metadata": {
+                "description": "ContainerTier Address Prefix CIDR"
+            },
+            "defaultValue": "10.0.0.0/20"
+        },
+        "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Machine 1 Server Name."
+            },
+            "minLength": 2,
+            "maxLength": 6,
+            "defaultValue": "edgevm"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The virtual machine server size."
+            },
+            "defaultValue": "Standard_DS1_V2"
+        },
+        "osVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "The Windows version for the VM."
+            },
+            "allowedValues": [
+                "2019-Datacenter-with-Containers",
+                "2019-Datacenter"
+            ],
+            "defaultValue": "2019-Datacenter"
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            },
+            "defaultValue": "azureUser"
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        }
+    },
+    "variables": {
+        "registryName": "[concat('registry', parameters('random'))]",
+        "VNetName": "[concat('vnet', parameters('random'))]",
+        "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
+        "Subnet1Name": "edgeTier",
+        "SubNet1Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet1Name'))]",
+        "Nsg1Name": "[concat(variables('VNetName'), '-', variables('Subnet1Name'), '-nsg')]",
+        "Nsg1Id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Nsg1Name'))]",
+        "VmName": "[concat(parameters('vmName'), parameters('random'))]",
+        "PublicIpName": "[concat(variables('VmName'), '-ip')]",
+        "NicName": "[concat(variables('vmName'),'-nic')]"
+    },
+    "resources": [
+        {
+            "comments": "## Network Security Group ##",
+            "name": "[variables('nsg1Name')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "priority": 1001,
+                            "direction": "Inbound",
+                            "access": "Allow",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "description": "ssh-for-vm-management"
+                        }
+                    },
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "priority": 1002,
+                            "direction": "Inbound",
+                            "access": "Allow",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "description": "rdp-for-vm-management"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "## Virtual Network ##",
+            "name": "[variables('VNetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
+            ],
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('Subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('Subnet1Prefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "## Public IP Address ##",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('PublicIpName')]",
+            "apiVersion": "2018-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "comments": "## Network Interface ##",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('NicName')]",
+            "apiVersion": "2018-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Nsg1Name'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('Subnet1Id')]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('Nsg1Id')]"
+                }
+            }
+        },
+        {
+            "comments": "## Virtual Machine ##",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[parameters('adminUserName')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "[parameters('osVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": []
+        },
+        {
+            "comments": "## Container Registry ##",
+            "name": "[variables('registryName')]",
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2017-10-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "tags": {
+                "contact": "[parameters('initials')]"
+            },
+            "sku": {
+                "name": "Standard",
+                "tier": "Standard"
+            },
+            "properties": {
+                "adminUserEnabled": false
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetwork": {
+            "type": "object",
+            "value": {
+                "id": "[variables('VNetId')]",
+                "name": "[variables('VNetName')]"
+            }
+        },
+        "subnets": {
+            "type": "object",
+            "value": {
+                "subnet1Id": "[variables('subnet1Id')]"
+            }
+        },
+        "securityGroups": {
+            "type": "object",
+            "value": {
+                "nsg1Id": "[variables('nsg1Id')]"
+            }
+        },
+        "containerRegistry": {
+            "type": "object",
+            "value": {
+                "id": "[reference(resourceId('Microsoft.ContainerRegistry/registries',variables('registryName')),'2017-10-01').loginServer]",
+                "name": "[variables('registryName')]"
+            }
+        }
+    }
+}
