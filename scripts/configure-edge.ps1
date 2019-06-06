@@ -21,4 +21,8 @@ Write-Host $deviceConnectionString
 
 # Install IoT Edge
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
+Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+
+# Configure IoT Edge
+. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
   Initialize-IoTEdge -Manual -DeviceConnectionString $deviceConnectionString -ContainerOs Windows
