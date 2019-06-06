@@ -57,13 +57,24 @@ $initials = "<your_initials>"
 install.ps1 -Initials $initials
 ```
 
-## Configure Connection STring
+## Configure IoT Edge
 
-1. Retrieve Connection String for Edge Device
-
-1. RDP to Edge Server and Initialize the Edge Runtime
+1. Connect to the Edge VM from CloudShell
 
 ```powershell
+$vm = "<your_vm_name>"
+$group = "<your_resourceGroup>"
+$cred = get-credential
+Enable-AzVMPSRemoting -Name $vm -ResourceGroup $group -Protocol https -OsType Windows
+Enter-AzVM -name $vm -ResourceGroup $group -Credential $cred
+```
+
+1. Retrieve Connection String for Edge Device from the desired IoT Hub
+
+1. Configure the Edge Runtime on the Edge VM
+
+```powershell
+#  Configure IOT Edge on Edge VM
 $DeviceConnectionString = "<your_connection_string>"
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
     Install-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -ContainerOs Windows

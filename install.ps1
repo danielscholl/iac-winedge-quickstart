@@ -24,7 +24,7 @@ Get-ChildItem Env:ARM*
 Get-ChildItem Env:AZURE*
 
 if ( !$Subscription) { throw "Subscription Required" }
-if ( !$ResourceGroupName) { $ResourceGroupName = "$Initials-tsi-resources" }
+if ( !$ResourceGroupName) { $ResourceGroupName = "$Initials-edge-resources" }
 if ( !$Location) { throw "Location Required" }
 
 

@@ -124,6 +124,20 @@
                             "destinationAddressPrefix": "*",
                             "description": "rdp-for-vm-management"
                         }
+                    },
+                    {
+                        "name": "allow-winrm-https",
+                        "properties": {
+                            "priority": 1003,
+                            "direction": "Inbound",
+                            "access": "Allow",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "5986",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "description": "Remote Windows Management"
+                        }
                     }
                 ]
             }
@@ -309,6 +323,12 @@
             "type": "object",
             "value": {
                 "nsgId": "[variables('nsgId')]"
+            }
+        },
+        "virtualMachine": {
+            "type": "object",
+            "value": {
+              "name": "[variables('vmName')]"
             }
         },
         "containerRegistry": {
