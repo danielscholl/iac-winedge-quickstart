@@ -4,7 +4,7 @@
 #>
 
 Param (
-    [string]$deviceConnectionString
+
 )
 
 # Firewall
@@ -17,12 +17,6 @@ New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8
 # Install Containers
 Install-WindowsFeature Containers
 
-Write-Host $deviceConnectionString
-
 # Install IoT Edge
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
 Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
-
-# Configure IoT Edge
-. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
-  Initialize-IoTEdge -Manual -DeviceConnectionString $deviceConnectionString -ContainerOs Windows
