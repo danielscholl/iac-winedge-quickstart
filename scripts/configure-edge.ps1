@@ -19,7 +19,7 @@ Install-WindowsFeature Containers
 
 # Install IoT Edge
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
-Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+Deploy-IoTEdge -ContainerOs Windows
 
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
     Install-IoTEdge -Manual -DeviceConnectionString $connectionString -ContainerOs Windows -Force -RestartIfNeeded
