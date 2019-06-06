@@ -105,5 +105,4 @@ DEPLOYMENT=${PWD##*/}
 az group deployment create --template-file azuredeploy.json  \
     --name $DEPLOYMENT \
     --resource-group $RESOURCE_GROUP \
-    --parameters azuredeploy.parameters.json \
     --parameters initials=$INITIALS --parameters random=$UNIQUE

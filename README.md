@@ -56,3 +56,15 @@ Requires the use of [powershell](https://docs.microsoft.com/en-us/powershell/scr
 $initials = "<your_initials>"
 install.ps1 -Initials $initials
 ```
+
+## Configure Connection STring
+
+1. Retrieve Connection String for Edge Device
+
+1. RDP to Edge Server and Initialize the Edge Runtime
+
+```powershell
+$DeviceConnectionString = "<your_connection_string>"
+. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
+    Install-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -ContainerOs Windows
+```
