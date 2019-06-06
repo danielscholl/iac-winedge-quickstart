@@ -48,6 +48,18 @@ describe('iac-tsi-quickstart', () => {
       it('should have a NicId', () => actual.should.containEql('NicId'));
       it('should have a registryName', () => actual.should.containEql('registryName'));
     });
+
+    context('creates the expected resources', () => {
+      const actual = template.resources.map(resource => resource.type);
+
+      it('should have 6 resources', () => actual.length.should.be.exactly(6));
+      it('should create Microsoft.Network/networkSecurityGroups', () => actual.should.containEql('Microsoft.Network/networkSecurityGroups'));
+      it('should create Microsoft.Network/virtualNetworks', () => actual.should.containEql('Microsoft.Network/virtualNetworks'));
+      it('should create Microsoft.Network/publicIPAddresses', () => actual.should.containEql('Microsoft.Network/publicIPAddresses'));
+      it('should create Microsoft.Network/networkInterfaces', () => actual.should.containEql('Microsoft.Network/networkInterfaces'));
+      it('should create Microsoft.Compute/virtualMachines', () => actual.should.containEql('Microsoft.Compute/virtualMachines'));
+      it('should create Microsoft.ContainerRegistry/registries', () => actual.should.containEql('Microsoft.ContainerRegistry/registries'));
+    });
   });
 
   context('parameters file', (done) => {

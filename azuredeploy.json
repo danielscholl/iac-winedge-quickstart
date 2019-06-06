@@ -267,6 +267,36 @@
             "properties": {
                 "adminUserEnabled": false
             }
+        },
+        {
+            "apiVersion": "2018-06-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "config-edge",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),copyindex())]",
+                "[variables('musicstoresqlName')]"
+            ],
+            "tags": {
+                "displayName": "config-app"
+            },
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "script location"
+                    ],
+                    "timestamp":123456789
+                },
+                "protectedSettings": {
+                    "commandToExecute": "myExecutionCommand",
+                    "storageAccountName": "myStorageAccountName",
+                    "storageAccountKey": "myStorageAccountKey"
+                }
+            }
         }
     ],
     "outputs": {
