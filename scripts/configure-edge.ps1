@@ -15,7 +15,11 @@ New-NetFirewallRule -DisplayName "IoT Edge" -Direction Inbound -LocalPort 15580,
 New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8883,5671 -Protocol TCP -Action Allow
 
 # Install Containers
-Install-WindowsFeature web-server -IncludeManagementTools
+Install-WindowsFeature Containers
+
+Write-Host $deviceConnectionString
+
+exit
 
 # Install IoT Edge
 

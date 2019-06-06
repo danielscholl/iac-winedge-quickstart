@@ -90,7 +90,8 @@
         "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
         "NicName": "[concat(variables('vmName'),'-nic')]",
         "NicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
-        "registryName": "[concat('registry', parameters('random'))]"
+        "registryName": "[concat('registry', parameters('random'))]",
+        "scriptParameters": "[concat('-deviceConnectionString ', parameters('deviceConnectionString'))]"
     },
     "resources": [
         {
@@ -255,7 +256,29 @@
                     ]
                 }
             },
-            "resources": []
+            "resources": [
+                {
+                  "type": "extensions",
+                  "name": "CustomScriptExtension",
+                  "apiVersion": "2017-03-30",
+                  "location": "[resourceGroup().location]",
+                  "dependsOn": [
+                    "[variables('vmName')]"
+                  ],
+                  "properties": {
+                    "publisher": "Microsoft.Compute",
+                    "type": "CustomScriptExtension",
+                    "typeHandlerVersion": "1.8",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                      "fileUris": [
+                        "https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/configure-edge.ps1"
+                      ],
+                      "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./configure-edge.ps1 ', variables('scriptParameters'))]"
+                    }
+                  }
+                }
+              ]
         },
         {
             "comments": "## Container Registry ##",
@@ -273,34 +296,6 @@
             },
             "properties": {
                 "adminUserEnabled": false
-            }
-        },
-        {
-            "apiVersion": "2018-06-01",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "config-edge",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
-                "[parameters('deviceConnectionString')]"
-            ],
-            "tags": {
-                "displayName": "config-edge"
-            },
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.9",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/configure-edge.ps1"
-                    ],
-                    "timestamp":123456789
-                },
-                "protectedSettings": {
-                    "commandToExecute": "configure-edge.ps1"
-                }
             }
         }
     ],
