@@ -4,7 +4,7 @@
 #>
 
 Param (
-
+    [string]$connectionString
 )
 
 # Firewall
@@ -20,3 +20,7 @@ Install-WindowsFeature Containers
 # Install IoT Edge
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
 Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+
+
+. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
+    Install-IoTEdge -Manual -DeviceConnectionString $connectionString -ContainerOs Windows -Force -RestartIfNeeded

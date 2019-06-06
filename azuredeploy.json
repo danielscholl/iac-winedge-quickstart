@@ -69,6 +69,12 @@
             "metadata": {
                 "description": "Password for the Virtual Machine."
             }
+        },
+        "deviceConnectionString": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Edge Device Connection String"
+            }
         }
     },
     "variables": {
@@ -83,7 +89,9 @@
         "PublicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIpName'))]",
         "NicName": "[concat(variables('vmName'),'-nic')]",
         "NicId": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]",
-        "registryName": "[concat('registry', parameters('random'))]"
+        "registryName": "[concat('registry', parameters('random'))]",
+        "scriptFile": "configure-edge.ps1",
+        "scriptParameters": "[concat('-connectionString ', parameters('deviceConnectionString'))]"    
     },
     "resources": [
         {
@@ -266,7 +274,7 @@
                       "fileUris": [
                         "https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/configure-edge.ps1"
                       ],
-                      "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File configure-edge.ps1 ')]"
+                      "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFile'), ' ', variables('scriptParameters')))]"
                     }
                   }
                 }
