@@ -71,7 +71,7 @@
             }
         },
         "deviceConnectionString": {
-            "type": "securestring",
+            "type": "string",
             "metadata": {
                 "description": "Edge Device Connection String"
             }
@@ -274,7 +274,7 @@
                       "fileUris": [
                         "https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/configure-edge.ps1"
                       ],
-                      "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFile'), ' ', variables('scriptParameters')))]"
+                      "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFile'), ' ', variables('scriptParameters'))]"
                     }
                   }
                 }

@@ -18,8 +18,8 @@ New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8
 Install-WindowsFeature Containers
 
 # Install IoT Edge
-. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
-Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+# . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
+# Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
 
 
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
