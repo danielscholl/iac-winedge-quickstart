@@ -4,7 +4,7 @@
 #>
 
 Param (
-    [string]$deviceConnectionString = "HostName=???.azure-devices.net;DeviceId=edge;SharedAccessKey="
+    [string]$deviceConnectionString
 )
 
 # Firewall

@@ -69,6 +69,13 @@
             "metadata": {
                 "description": "Password for the Virtual Machine."
             }
+        },
+        "deviceConnectionString": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            },
+            "defaultValue": ""
         }
     },
     "variables": {
@@ -274,11 +281,11 @@
             "name": "config-edge",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'),copyindex())]",
-                "[variables('musicstoresqlName')]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
+                "[parameters('deviceConnectionString')]"
             ],
             "tags": {
-                "displayName": "config-app"
+                "displayName": "config-edge"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -287,14 +294,12 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "script location"
+                        "https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/configure-edge.ps1"
                     ],
                     "timestamp":123456789
                 },
                 "protectedSettings": {
-                    "commandToExecute": "myExecutionCommand",
-                    "storageAccountName": "myStorageAccountName",
-                    "storageAccountKey": "myStorageAccountKey"
+                    "commandToExecute": "configure-edge.ps1"
                 }
             }
         }
