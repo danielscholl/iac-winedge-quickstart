@@ -2,3 +2,4 @@ node_modules
 .nyc_output
 .envrc
 .env.ps1
+azuredeploy.parameters.json
