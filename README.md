@@ -1,7 +1,7 @@
 # Introduction
 Infrastructure as Code using ARM - Windows Edge VM and Azure Container Registery.
 
-
+[![Build Status](https://dascholl.visualstudio.com/IoT/_apis/build/status/danielscholl.iac-winedge-quickstart?branchName=master)](https://dascholl.visualstudio.com/IoT/_build/latest?definitionId=29&branchName=master)
 
 
 ### Create Environment File
