@@ -52,8 +52,10 @@
                 "description": "The Windows version for the VM."
             },
             "allowedValues": [
+                "2019-Datacenter",
                 "2019-Datacenter-with-Containers",
-                "2019-Datacenter"
+                "2019-Datacenter-Server-Core",
+                "2019-Datacenter-with-Containers"
             ],
             "defaultValue": "2019-Datacenter"
         },
