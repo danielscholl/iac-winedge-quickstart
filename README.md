@@ -77,5 +77,41 @@ Enter-AzVM -name $vm -ResourceGroup $group -Credential $cred
 #  Configure IOT Edge on Edge VM
 $DeviceConnectionString = "<your_connection_string>"
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
-    Install-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -ContainerOs Windows
+Initialize-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -ContainerOs Windows
+
+iotedge check
 ```
+
+1. Deploy an Empty Manifest and Setup Routes
+
+```bash
+./deploy.sh <hub> <device>
+```
+
+## Modify the Listen and Connect URI Schemes
+
+If necessary the URI Listen and Connect URI Schemes can be modified from UNIX to HTTP in order to support .NET Framework Modules
+
+1. Locate the IP Address of the machine `ipconfig`
+
+1. Edit the Configuration and modify the Connect and Listen URI's using the IP Address `C:\programdata\iotedge\config.yaml`
+
+```bash
+connect:
+  management_uri: "http://10.0.0.4:15580"
+  workload_uri: "http://10.0.0.4:15581"
+
+listen:
+  management_uri: "http://10.0.0.4:15580"
+  workload_uri: "http://10.0.0.4:15581"
+```
+
+1. Restart the IoT Edge Service
+    `restart-service iotedge`
+
+1.	Set the Environment Variable to access the iotedge cli tool
+
+```powershell
+    [Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580")
+```
+
