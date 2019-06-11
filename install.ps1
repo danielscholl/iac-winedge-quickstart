@@ -13,19 +13,21 @@
 
 Param(
   [string]$Subscription = $env:ARM_SUBSCRIPTION_ID,
-  [string]$Initials = "cat",
+  [string]$Initials = $env:PROJECT_CONTACT,
   [string]$ResourceGroupName,
   [string]$Location = $env:AZURE_LOCATION,
-  [string]$ServicePrincipalAppId = $env:AZURE_USER_ID
+  [string]$ServicePrincipalAppId = $env:AZURE_USER_ID,
+  [boolean] $Show = $false
 )
 
 . ./.env.ps1
 Get-ChildItem Env:ARM*
 Get-ChildItem Env:AZURE*
+Get-ChildItem Env:PROJECT*
 
-if ( !$Subscription) { throw "Subscription Required" }
+
 if ( !$ResourceGroupName) { $ResourceGroupName = "$Initials-edge-resources" }
-if ( !$Location) { throw "Location Required" }
+if ( !$Initials) { $Initials = "cat" }
 
 
 ###############################
@@ -71,7 +73,7 @@ function LoginAzure() {
   if ([string]::IsNullOrEmpty($(Get-AzContext).Account.Id)) {
     if($env:ARM_CLIENT_ID) {
 
-      $securePwd = $env:ARM_CLIENT_SECRET | ConvertTo-SecureString 
+      $securePwd = $env:ARM_CLIENT_SECRET | ConvertTo-SecureString
       $pscredential = New-Object System.Management.Automation.PSCredential -ArgumentList $env:ARM_CLIENT_ID, $securePwd
       Connect-AzAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantId
 
@@ -111,6 +113,20 @@ function ResourceProvider([string]$ProviderNamespace) {
     Register-AzResourceProvider -ProviderNamespace $ProviderNamespace
   }
 }
+
+###############################
+## Environment               ##
+###############################
+
+if ($Show -eq $true) {
+  Write-Host "---------------------------------------------" -ForegroundColor "blue"
+  Write-Host "Environment Loaded!!!!!" -ForegroundColor "red"
+  Write-Host "---------------------------------------------" -ForegroundColor "blue"
+  exit
+}
+
+if ( !$Subscription) { throw "Subscription Required" }
+if ( !$Location) { throw "Location Required" }
 
 
 ###############################
