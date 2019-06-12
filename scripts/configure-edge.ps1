@@ -9,11 +9,15 @@ Param (
 
 # Firewall
 ## Inbound Ports required 15580, 15581
-New-NetFirewallRule -DisplayName "IoT Edge" -Direction Inbound -LocalPort 15580,15581 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "IoT Edge" -Direction Inbound -LocalPort 15580, 15581 -Protocol TCP -Action Allow
 
 ## Outbound Ports required 443, 8883, 5671
-New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8883,5671 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443, 8883, 5671 -Protocol TCP -Action Allow
+
+# Setup System Environment Variable to connect to Moby.
+[System.Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/iotedge_moby_engine", [System.EnvironmentVariableTarget]::User)
+
 
 # Deploy IoT Edge
-. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
-    Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+. { Invoke-WebRequest -useb aka.ms/iotedge-win } | Invoke-Expression; `
+  Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
