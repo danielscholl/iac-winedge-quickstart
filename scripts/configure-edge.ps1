@@ -17,6 +17,16 @@ New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443, 
 # Setup System Environment Variable to connect to Moby.
 [System.Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/iotedge_moby_engine", [System.EnvironmentVariableTarget]::User)
 
+# Write daemon.json file
+Set-Content -Path 'C:\ProgramData\iotedge-moby\config\daemon.json' -Value @'
+{
+  "log-driver": "json-file",
+  "log-opts": {
+      "max-size": "10m",
+      "max-file": "3"
+  }
+}
+'@
 
 # Deploy IoT Edge
 . { Invoke-WebRequest -useb aka.ms/iotedge-win } | Invoke-Expression; `
