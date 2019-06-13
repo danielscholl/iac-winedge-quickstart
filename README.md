@@ -82,12 +82,6 @@ Initialize-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -Cont
 iotedge check
 ```
 
-1. Deploy an Empty Manifest and Setup Routes
-
-```bash
-./deploy.sh <hub> <device>
-```
-
 ## Modify the Listen and Connect URI Schemes
 
 If necessary the URI Listen and Connect URI Schemes can be modified from UNIX to HTTP in order to support .NET Framework Modules
@@ -112,6 +106,11 @@ listen:
 1.	Set the Environment Variable to access the iotedge cli tool
 
 ```powershell
-    [Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580")
+    [Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580", [System.EnvironmentVariableTarget]::User)
 ```
 
+1. Deploy an Empty Manifest and Routes
+
+```bash
+./deploy.sh <hub> <device>
+```

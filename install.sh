@@ -94,7 +94,7 @@ az account set --subscription ${ARM_SUBSCRIPTION_ID}
 
 
 tput setaf 2; echo 'Creating Resource Group...' ; tput sgr0
-RESOURCE_GROUP="$PROJECT_INITIALS-edge-resources"
+RESOURCE_GROUP="$PROJECT_INITIALS-edge-stamp"
 CreateResourceGroup $RESOURCE_GROUP $AZURE_LOCATION
 
 
