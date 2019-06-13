@@ -63,7 +63,7 @@ function CreateResourceGroup() {
 
       OUTPUT=$(az group create --name $1 \
         --location $2 \
-        --tags RANDOM=$UNIQUE contact=$INITIALS \
+        --tags RANDOM=$UNIQUE contact=$PROJECT_INITIALS \
         -ojsonc)
       tput setaf 3;  echo "Created Resource Group $1."; tput sgr0
     else
