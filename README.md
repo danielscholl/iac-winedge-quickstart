@@ -111,3 +111,14 @@ listen:
 ```bash
 ./deploy.sh <hub> <device>
 ```
+
+### Test the Solution (Optional)
+
+>NOTE:  THIS CAN ONLY BE DONE FROM A LINUX SHELL!!
+
+Manually run the test suite
+
+```bash
+npm install
+npm test
+```
