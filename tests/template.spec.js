@@ -20,11 +20,13 @@ describe('iac-tsi-quickstart', () => {
     context('defines the expected parameters', () => {
       const actual = Object.keys(template.parameters);
 
-      it('should have 9 parameters', () => actual.length.should.be.exactly(9));
+      it('should have 11 parameters', () => actual.length.should.be.exactly(11));
       it('should have a initials', () => actual.should.containEql('initials'));
       it('should have a random', () => actual.should.containEql('random'));
+      it('should have a storageAccountType', () => actual.should.containEql('storageAccountType'));
       it('should have a vnetPrefix', () => actual.should.containEql('vnetPrefix'));
       it('should have a subnetPrefix', () => actual.should.containEql('subnetPrefix'));
+      it('should have a numberOfInstances', () => actual.should.containEql('numberOfInstances'));
       it('should have a vmName', () => actual.should.containEql('vmName'));
       it('should have a vmSize', () => actual.should.containEql('vmSize'));
       it('should have a osVersion', () => actual.should.containEql('osVersion'));
@@ -35,7 +37,9 @@ describe('iac-tsi-quickstart', () => {
     context('defines the expected variables', () => {
       const actual = Object.keys(template.variables);
 
-      it('should have 12 variables', () => actual.length.should.be.exactly(12));
+      it('should have 17 variables', () => actual.length.should.be.exactly(17));
+      it('should have a StorageAccountName', () => actual.should.containEql('StorageAccountName'));
+      it('should have a StorageId', () => actual.should.containEql('StorageId'));
       it('should have a NsgName', () => actual.should.containEql('NsgName'));
       it('should have a NsgId', () => actual.should.containEql('NsgId'));
       it('should have a VNetName', () => actual.should.containEql('VNetName'));
@@ -43,22 +47,20 @@ describe('iac-tsi-quickstart', () => {
       it('should have a SubnetName', () => actual.should.containEql('SubnetName'));
       it('should have a SubNetId', () => actual.should.containEql('SubNetId'));
       it('should have a PublicIpName', () => actual.should.containEql('PublicIpName'));
-      it('should have a PublicIpId', () => actual.should.containEql('PublicIpId'));
       it('should have a NicName', () => actual.should.containEql('NicName'));
-      it('should have a NicId', () => actual.should.containEql('NicId'));
-      it('should have a registryName', () => actual.should.containEql('registryName'));
+      it('should have a VmName', () => actual.should.containEql('VmName'));
     });
 
     context('creates the expected resources', () => {
       const actual = template.resources.map(resource => resource.type);
 
-      it('should have 6 resources', () => actual.length.should.be.exactly(6));
+      it('should have 7 resources', () => actual.length.should.be.exactly(7));
+      it('should create Microsoft.Storage/storageAccounts', () => actual.should.containEql('Microsoft.Storage/storageAccounts'));
       it('should create Microsoft.Network/networkSecurityGroups', () => actual.should.containEql('Microsoft.Network/networkSecurityGroups'));
       it('should create Microsoft.Network/virtualNetworks', () => actual.should.containEql('Microsoft.Network/virtualNetworks'));
       it('should create Microsoft.Network/publicIPAddresses', () => actual.should.containEql('Microsoft.Network/publicIPAddresses'));
       it('should create Microsoft.Network/networkInterfaces', () => actual.should.containEql('Microsoft.Network/networkInterfaces'));
       it('should create Microsoft.Compute/virtualMachines', () => actual.should.containEql('Microsoft.Compute/virtualMachines'));
-      it('should create Microsoft.ContainerRegistry/registries', () => actual.should.containEql('Microsoft.ContainerRegistry/registries'));
     });
   });
 
