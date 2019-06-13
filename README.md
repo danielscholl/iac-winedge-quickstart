@@ -17,24 +17,22 @@ Default Environment Settings
 
 
 
-# Provision Infrastructure 
+### Provision Infrastructure 
 
->NOTE:  This can be performed via Portal UI or CloudShell (Bash/Powershell)
+>Note:  This can be performed via Portal UI or CloudShell (Bash/Powershell)
 
-## Provision using portal
+__Provision using portal__
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fiac-winedge-quickstart%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
 
-## Provision using bash
+__Provision using bash__
 
-__PreRequisites__
+>Note:  Requires the use of [direnv](https://direnv.net/)
 
-Requires the use of [direnv](https://direnv.net/)
-
-1. Run Install Script for ARM Process
+Run Install Script for ARM Process
 
 ```bash
 # Initialize the Modules
@@ -43,13 +41,12 @@ install.sh $initials
 ```
 
 
-## Provision using powershell
+__Provision using powershell__
 
-__PreRequisites__
 
-Requires the use of [powershell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-6)
+>Note:  Requires the use of [powershell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-6)
 
-1. Run Install Script for ARM Process
+Run Install Script for ARM Process
 
 ```bash
 # Initialize the Modules
@@ -57,7 +54,7 @@ $initials = "<your_initials>"
 install.ps1 -Initials $initials
 ```
 
-## Configure IoT Edge
+### Configure IoT Edge
 
 1. Connect to the Edge VM from CloudShell
 
@@ -69,9 +66,9 @@ Enable-AzVMPSRemoting -Name $vm -ResourceGroup $group -Protocol https -OsType Wi
 Enter-AzVM -name $vm -ResourceGroup $group -Credential $cred
 ```
 
-1. Retrieve Connection String for Edge Device from the desired IoT Hub
+2. Retrieve Connection String for Edge Device from the desired IoT Hub
 
-1. Configure the Edge Runtime on the Edge VM
+3. Configure the Edge Runtime on the Edge VM
 
 ```powershell
 #  Configure IOT Edge on Edge VM
@@ -82,15 +79,15 @@ Initialize-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -Cont
 iotedge check
 ```
 
-## Modify the Listen and Connect URI Schemes
+### Modify URI Schemes for Listen and Connect
 
 If necessary the URI Listen and Connect URI Schemes can be modified from UNIX to HTTP in order to support .NET Framework Modules
 
 1. Locate the IP Address of the machine `ipconfig`
 
-1. Edit the Configuration and modify the Connect and Listen URI's using the IP Address `C:\programdata\iotedge\config.yaml`
+2. Edit the Configuration and modify the Connect and Listen URI's using the IP Address `C:\programdata\iotedge\config.yaml`
 
-```bash
+```powershell
 connect:
   management_uri: "http://10.0.0.4:15580"
   workload_uri: "http://10.0.0.4:15581"
@@ -100,16 +97,16 @@ listen:
   workload_uri: "http://10.0.0.4:15581"
 ```
 
-1. Restart the IoT Edge Service
+3. Restart the IoT Edge Service
     `restart-service iotedge`
 
-1.	Set the Environment Variable to access the iotedge cli tool
+4.	Set the Environment Variable to access the iotedge cli tool
 
 ```powershell
     [Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580", [System.EnvironmentVariableTarget]::User)
 ```
 
-1. Deploy an Empty Manifest and Routes
+5. Deploy an Empty Manifest and Routes
 
 ```bash
 ./deploy.sh <hub> <device>
