@@ -14,9 +14,9 @@ usage() { echo "Usage: install.sh " 1>&2; exit 1; }
 
 if [ -f ./.envrc ]; then source ./.envrc; fi
 
-if [ ! -z $1 ]; then INITIALS=$1; fi
-if [ -z $INITIALS ]; then
-  INITIALS="cat"
+if [ ! -z $1 ]; then PROJECT_INITIALS=$1; fi
+if [ -z $PROJECT_INITIALS ]; then
+  PROJECT_INITIALS="CAT"
 fi
 
 if [ -z $ARM_SUBSCRIPTION_ID ]; then
@@ -53,11 +53,14 @@ function CreateResourceGroup() {
   local _result=$(az group show --name $1)
   if [ "$_result"  == "" ]
     then
-      if [ "$(uname)" == "Darwin" ]; then
-        UNIQUE=$(jot -r 1 100 999)
-      else
-        UNIQUE=$(shuf -i 100-999 -n 1)
-      fi
+      if [ -z $PROJECT_UNIQUE ]; then
+        if [ "$(uname)" == "Darwin" ]; then
+          UNIQUE=$(jot -r 1 100 999)
+        else
+          UNIQUE=$(shuf -i 100-999 -n 1)
+        fi
+      else UNIQUE=$PROJECT_UNIQUE; fi
+
       OUTPUT=$(az group create --name $1 \
         --location $2 \
         --tags RANDOM=$UNIQUE contact=$INITIALS \
@@ -91,7 +94,7 @@ az account set --subscription ${ARM_SUBSCRIPTION_ID}
 
 
 tput setaf 2; echo 'Creating Resource Group...' ; tput sgr0
-RESOURCE_GROUP="$INITIALS-edge-resources"
+RESOURCE_GROUP="$PROJECT_INITIALS-edge-resources"
 CreateResourceGroup $RESOURCE_GROUP $AZURE_LOCATION
 
 
@@ -105,4 +108,5 @@ DEPLOYMENT=${PWD##*/}
 az group deployment create --template-file azuredeploy.json  \
     --name $DEPLOYMENT \
     --resource-group $RESOURCE_GROUP \
-    --parameters initials=$INITIALS --parameters random=$UNIQUE
+    --parameters azuredeploy.parameters.json \
+    --parameters initials=$PROJECT_INITIALS --parameters random=$UNIQUE
