@@ -74,10 +74,9 @@
             "allowedValues": [
                 "2019-Datacenter",
                 "2019-Datacenter-with-Containers",
-                "2019-Datacenter-Server-Core",
-                "2019-Datacenter-with-Containers"
+                "2019-Datacenter-Core-smalldisk"
             ],
-            "defaultValue": "2019-Datacenter"
+            "defaultValue": "2019-Datacenter-Core-smalldisk"
         },
         "adminUsername": {
             "type": "string",
