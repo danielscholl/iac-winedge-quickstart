@@ -249,10 +249,11 @@ New-Module -Name IoTEdge -ScriptBlock {
       # Start services
       Set-SystemPath
       Start-IoTEdgeService
-      if ($ContainerOs -eq 'Linux') {
-          Add-FirewallExceptions
-      }
+      # if ($ContainerOs -eq 'Linux') {
+      #     Add-FirewallExceptions
+      # }
 
+      Add-FirewallExceptions  # Adding Firewall for both Windows and Linux ContainerOS
       Write-LogInformation
   }
 
