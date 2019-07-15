@@ -112,9 +112,62 @@ listen:
 ./deploy.sh <hub> <device>
 ```
 
+### Enable Container Solution Monitoring (Optional)
+
+>Note: THIS REQUIRES REPLACING THE CONTAINER ENGINE
+
+Enable the [Azure Container Monitoring Solution](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers).
+
+1. Clean up the Moby Service
+
+```powershell
+stop-service iotedge
+
+# Remove Container and images
+docker rm -f edgeHub edgeAgent
+docker rmi mcr.microsoft.com/azureiotedge-hub:1.0.8-rc2
+docker rmi mcr.microsoft.com/azureiotedge-agent:1.0.8-rc2
+
+stop-service iotedge-moby
+```
+
+2. Configure the Docker Service
+
+```powershell
+# Register the Docker Service on port 2376
+cd 'C:\Program Files\iotedge-moby'
+dockerd.exe --register-service -H npipe:// -H 0.0.0.0:2376
+start-service docker
+Get-Service docker |  Set-Service -StartupType Automatic
+
+# Pull the IoT Edge Containers
+docker -H npipe:////./pipe/docker_engine pull mcr.microsoft.com/azureiotedge-agent:1.0.8-rc2
+docker -H npipe:////./pipe/docker_engine pull mcr.microsoft.com/azureiotedge-hub:1.0.8-rc2
+
+# Setup System Environment Variable to connect to Moby.
+[System.Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/docker_engine", [System.EnvironmentVariableTarget]::Machine)
+```
+
+3. Modify the iotedge uri to use the alternate container engine the config.yaml
+
+```powershell
+stop-service iotedge
+
+# ----------config.yaml------------------
+#uri: 'npipe://./pipe/iotedge_moby_engine'
+uri: 'npipe://./pipe/docker_engine'
+
+```
+
+4. Restart the Edge Server
+
+```powershell
+restart-computer
+```
+
 ### Test the Solution (Optional)
 
->NOTE:  THIS CAN ONLY BE DONE FROM A LINUX SHELL!!
+>Note:  THIS CAN ONLY BE DONE FROM A LINUX SHELL!!
 
 Manually run the test suite
 
