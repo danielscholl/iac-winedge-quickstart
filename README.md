@@ -68,6 +68,7 @@ Enter-AzVM -name $vm -ResourceGroup $group -Credential $cred
 
 2. Retrieve Connection String for Edge Device from the desired IoT Hub
 
+
 3. Configure the Edge Runtime on the Edge VM
 
 ```powershell
@@ -76,16 +77,68 @@ $DeviceConnectionString = "<your_connection_string>"
 . {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
 Initialize-IoTEdge -Manual -DeviceConnectionString $DeviceConnectionString -ContainerOs Windows
 
+Get-IoTEdgeLog
 iotedge check
 ```
 
-### Modify URI Schemes for Listen and Connect
 
-If necessary the URI Listen and Connect URI Schemes can be modified from UNIX to HTTP in order to support .NET Framework Modules
 
-1. Locate the IP Address of the machine `ipconfig`
+### Enable Container Solution Monitoring (Optional)
+
+>Note: THIS REQUIRES REPLACING THE CONTAINER ENGINE
+
+Enable the [Azure Container Monitoring Solution](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers).
+
+```powershell
+stop-service iotedge
+stop-service iotedge-moby
+
+# Reconfigure the Service executable path
+C:\Program Files\iotedge-moby\dockerd.exe -H npipe:////./pipe/docker_engine -H 0.0.0.0:2376 --exec-opt isolation=process --run-service --data-root C:\ProgramData\iotedge-moby --exec-root C:\ProgramData\iotedge-moby\\exec-root
+
+# Start the Container Service
+start-service iotedge-moby
+
+# Test the connections
+docker -H npipe:////./pipe/docker_engine images
+docker -H 0.0.0.0:2376 images
+
+# Setup Environment Variable for Docker to connect to container service.
+[System.Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/docker_engine", [System.EnvironmentVariableTarget]::Machine)
+
+# --> Logoff for Environment Variable to take effect 
+
+# Modify the config.yaml
+ # uri: 'npipe://./pipe/iotedge_moby_engine'
+  uri: 'npipe://./pipe/docker_engine'
+
+# Start IoTEdge Service
+start-service iotedge
+
+# Check
+iotedge check
+```
+
+
+### Modify URI Schemes to HTTP for Listen and Connect (Optional)
+
+The URI Listen and Connect URI Schemes can be modified from UNIX to HTTP in order to support .NET Framework Modules
+
+> Note: This is not recommended for a production scenario.
+
+1. Open the firewall rule to allow 15580 and 15581 and identify the IP Address
+
+```powershell
+# Add Firewall Rule
+New-NetFirewallRule -DisplayName "IoT Edge" -Direction Inbound -LocalPort 15580, 15581 -Protocol TCP -Action Allow
+
+# Retrieve IP Address
+ipconfig
+```
 
 2. Edit the Configuration and modify the Connect and Listen URI's using the IP Address `C:\programdata\iotedge\config.yaml`
+
+>Note: Use the _IP ADDRESS_ from the results of `ipconfig`
 
 ```powershell
 connect:
@@ -97,72 +150,16 @@ listen:
   workload_uri: "http://10.0.0.4:15581"
 ```
 
-3. Restart the IoT Edge Service
-    `restart-service iotedge`
+3.	Set the Environment Variable to access the iotedge cli tool and restart the service
 
-4.	Set the Environment Variable to access the iotedge cli tool
-
-```powershell
-    [Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580", [System.EnvironmentVariableTarget]::User)
-```
-
-5. Deploy an Empty Manifest and Routes
-
-```bash
-./deploy.sh <hub> <device>
-```
-
-### Enable Container Solution Monitoring (Optional)
-
->Note: THIS REQUIRES REPLACING THE CONTAINER ENGINE
-
-Enable the [Azure Container Monitoring Solution](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers).
-
-1. Clean up the Moby Service
+> Note: Use the _IP ADDRESS_ from the results of `ipconfig`
 
 ```powershell
-stop-service iotedge
+# Setup the Environment variable (requires logoff to apply)
+[System.Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.0.4:15580", [System.EnvironmentVariableTarget]::Machine)
 
-# Remove Container and images
-docker rm -f edgeHub edgeAgent
-docker rmi mcr.microsoft.com/azureiotedge-hub:1.0.8-rc2
-docker rmi mcr.microsoft.com/azureiotedge-agent:1.0.8-rc2
-
-stop-service iotedge-moby
-```
-
-2. Configure the Docker Service
-
-```powershell
-# Register the Docker Service on port 2376
-cd 'C:\Program Files\iotedge-moby'
-dockerd.exe --register-service -H npipe:// -H 0.0.0.0:2376
-start-service docker
-Get-Service docker |  Set-Service -StartupType Automatic
-
-# Pull the IoT Edge Containers
-docker -H npipe:////./pipe/docker_engine pull mcr.microsoft.com/azureiotedge-agent:1.0.8-rc2
-docker -H npipe:////./pipe/docker_engine pull mcr.microsoft.com/azureiotedge-hub:1.0.8-rc2
-
-# Setup System Environment Variable to connect to Moby.
-[System.Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/docker_engine", [System.EnvironmentVariableTarget]::Machine)
-```
-
-3. Modify the iotedge uri to use the alternate container engine the config.yaml
-
-```powershell
-stop-service iotedge
-
-# ----------config.yaml------------------
-#uri: 'npipe://./pipe/iotedge_moby_engine'
-uri: 'npipe://./pipe/docker_engine'
-
-```
-
-4. Restart the Edge Server
-
-```powershell
-restart-computer
+# Restart the Iot Edge Service
+restart-service iotedge
 ```
 
 ### Test the Solution (Optional)
