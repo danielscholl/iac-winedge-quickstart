@@ -91,7 +91,7 @@ Enable the [Azure Container Monitoring Solution](https://docs.microsoft.com/en-u
 stop-service iotedge
 stop-service iotedge-moby
 
-# Reconfigure the Service executable path
+# Reconfigure the iotedge-moby Service to use the following executable path
 C:\Program Files\iotedge-moby\dockerd.exe -H npipe:////./pipe/docker_engine -H 0.0.0.0:2376 --exec-opt isolation=process --run-service --data-root C:\ProgramData\iotedge-moby --exec-root C:\ProgramData\iotedge-moby\\exec-root
 
 # Start the Container Service
