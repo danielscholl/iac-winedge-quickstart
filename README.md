@@ -85,8 +85,6 @@ iotedge check
 
 ### Enable Container Solution Monitoring (Optional)
 
->Note: THIS REQUIRES REPLACING THE CONTAINER ENGINE
-
 Enable the [Azure Container Monitoring Solution](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers).
 
 ```powershell
