@@ -159,14 +159,3 @@ listen:
 # Restart the Iot Edge Service
 restart-service iotedge
 ```
-
-### Test the Solution (Optional)
-
->Note:  THIS CAN ONLY BE DONE FROM A LINUX SHELL!!
-
-Manually run the test suite
-
-```bash
-npm install
-npm test
-```
