@@ -7,7 +7,7 @@ New-Module -Name IoTEdge -ScriptBlock {
   #requires -Version 5
   #requires -RunAsAdministrator
 
-  Set-Variable ReleaseTAG -Value "1.0.9-rc1" -Option Constant
+  Set-Variable ReleaseTAG -Value "1.0.9-rc2" -Option Constant
 
   Set-Variable Windows1607 -Value 14393 -Option Constant
   Set-Variable Windows1809 -Value 17763 -Option Constant
