@@ -30,8 +30,11 @@ Set-Content -Path 'C:\ProgramData\iotedge-moby\config\daemon.json' -Value @'
 '@
 
 # Deploy IoT Edge aka.ms/iotedge-win
-# . { Invoke-WebRequest -useb https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/IotEdgeSecurityDaemon.ps1 } | Invoke-Expression; `
-#   Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+. { Invoke-WebRequest -useb https://raw.githubusercontent.com/danielscholl/iac-winedge-quickstart/master/scripts/IotEdgeSecurityDaemon.ps1 } | Invoke-Expression; `
+   Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
 
-  . { Invoke-WebRequest -useb aka.ms/iotedge-win } | Invoke-Expression; `
-  Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+#  . { Invoke-WebRequest -useb aka.ms/iotedge-win } | Invoke-Expression; `
+#  Deploy-IoTEdge -ContainerOs Windows -RestartIfNeeded
+
+#. {Invoke-WebRequest -useb https://aka.ms/iotedge-win} | Invoke-Expression; `
+#Initialize-IoTEdge -Dps -ScopeId {scope ID} -RegistrationId {registration ID} -SymmetricKey {symmetric key}
